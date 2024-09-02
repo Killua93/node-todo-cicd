@@ -1,73 +1,66 @@
-@Library("Shared") _
+@Library("shared") _
+
 pipeline {
-     agent any 
-     environment {
-        SONAR_HOME= tool "Sonar"
-}
-   stages {
-      stage("code checkout"){
-        steps {
-           script {
-               code_checkout("https://github.com/Killua93/node-todo-cicd.git", "main")
-          }
-     }
-}
-        stage("sonarqube analysis"){
-           steps {
-              script {
-                  sonarqube_analysis("Sonar", "node-todo", "node-todo")
-            }
-      }
-}
-         stage("sonarqube quality gates"){
+    agent any
+    environment { 
+        SONAR_HOME = tool "Sonar" 
+    }
+    stages {
+        stage("code checkout") {
             steps {
-               script {
-                  sonar_qualitygate()
-          }
-     }
-}
-          stage("Owasp dependency check") {
-              steps {
-                 script {
-                      owasp_dependency()
+                script {
+                    code_checkout("https://github.com/Killua93/node-todo-cicd.git", "main")
+                }
             }
-       }
+        }
+        stage("sonarqube analysis") {
+            steps {
+                script {
+                    sonarqube_analysis("Sonar", "node-todo", "node-todo")
+                }
+            }
+        }
+        stage("sonarqube quality gates") {
+            steps {
+                script {
+                    sonar_qualitygate() 
+                }
+            }
+        }
+        stage("OWASP dependency check") { 
+            steps {
+                script {
+                    owasp_check() 
+                }
+            }
+        }
+        stage("docker build") { 
+            steps {
+                script {
+                    docker_build("killua91", "node-todo", "latest")
+                }
+            }
+        }
+        stage("docker trivy scan") { 
+            steps {
+                script {
+                    docker_trivy()
+                }
+            }
+        }
+        stage("docker push to Docker Hub") { 
+            steps {
+                script {
+                    docker_push("killua91", "node-todo", "latest")
+                }
+            }
+        }
+        stage("docker compose") { 
+            steps {
+                script {
+                    docker_compose()
+                }
+            }
+        }
+    }
 }
-          stage("docker code build") {
-              steps {
-                  script {
-                      docker_build("killua91","node-todo","latest")
-             }
-      }
-}  
-          stage("docker trivy image scan") {
-              steps {
-                  script {
-                      docker_trivy()
-             }
-      }
-}
-           stage("docker build push to docker hub") {
-              steps {
-                  script {
-                      docker_push("killua91", "node-todo", "latest")
-             }
-      }
-}
-          stage("docker code deploy") {
-              steps {
-                  script {
-                      docker_compose()
-             }
-      }
-}
-}
-}
-            
-            
-
-
-
-
-
-            
