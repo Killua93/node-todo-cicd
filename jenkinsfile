@@ -1,4 +1,4 @@
-@Library("shared") _
+@Library('shared') _
 
 pipeline {
     agent any
@@ -9,7 +9,7 @@ pipeline {
         stage("code checkout") {
             steps {
                 script {
-                    code_checkout("https://github.com/Killua93/node-todo-cicd.git", "main")
+                    code_checkout("master", "https://github.com/Killua93/node-todo-cicd.git")
                 }
             }
         }
